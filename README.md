@@ -1,4 +1,4 @@
-### What is Ranked Bedwars (RBW)?
+### What is Ranked Bedwars (RBW)? 
 
 **Ranked Bedwars** is a competitive version of the popular Minecraft mini-game, Bedwars. It is primarily played on private servers and organized through Discord communities. Unlike casual games, RBW focuses on **high-level strategy, mechanical skill, and team coordination.**
 
@@ -22,3 +22,8 @@ While casual Bedwars can be chaotic and luck-based, RBW is all about **skill exp
 | **Queue (Que)** | Joining a matchmaking pool to find a game. |
 | **Bridge Fight** | A high-stakes battle that happens on narrow bridges.  |
 | **Base Trade** | When both teams lose their beds at the same time. |
+
+
+
+
+# Chinese Version

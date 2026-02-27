@@ -10,16 +10,16 @@ import asyncio
 
 
 HYPIXEL_API_KEY = "你的 Hypixel API Key"
-TOKEN = "你的token"
+TOKEN = "你的 bot token "
 
 
-REGISTER_CHANNEL_ID = 1475909779560992888
-CATEGORY_ID = 1475528586143469840           
-REPORT_LOG_CHANNEL_ID = 1471948355746791688   
-RESULT_ANNOUNCE_CHANNEL_ID = 1475525389047566448  
-OWNER_ROLE_ID = 1471934455705895047
-ADMIN_ROLE_ID = 1471948205120946351
-START_ROLE_ID = 1472352718722175190  
+REGISTER_CHANNEL_ID = 123456789
+CATEGORY_ID = 123456789   
+REPORT_LOG_CHANNEL_ID = 123456789
+RESULT_ANNOUNCE_CHANNEL_ID = 123456789
+OWNER_ROLE_ID = 1123456789
+START_ROLE_ID = 1123456789
+ADMIN_ROLE_ID = 1123456789
 
 PLAYERS_DB = "players.json"
 USER_DB = "user.json"
@@ -141,8 +141,8 @@ class SettlementView(discord.ui.View):
         self.img_url = img_url
 
         win_options = [
-            discord.SelectOption(label="Team A (🔵) 勝", value="A"),
-            discord.SelectOption(label="Team B (🔴) 勝", value="B"),
+            discord.SelectOption(label="Team A  勝", value="A"),
+            discord.SelectOption(label="Team B  勝", value="B"),
             discord.SelectOption(label="比賽作廢", value="VOID")
         ]
         self.add_item(discord.ui.Select(placeholder="🏆 選擇獲勝隊伍...", options=win_options, custom_id="win_select"))
@@ -155,13 +155,13 @@ class SettlementView(discord.ui.View):
     async def confirm(self, interaction: discord.Interaction):
         staff_roles = [OWNER_ROLE_ID, ADMIN_ROLE_ID]
         if not any(r.id in staff_roles for r in interaction.user.roles):
-            return await interaction.response.send_message("❌ 你不是管理員，別亂點！", ephemeral=True)
+            return await interaction.response.send_message(" 你不是管理員，別亂點！", ephemeral=True)
 
         win_side = next(i for i in self.children if i.custom_id == "win_select").values[0]
         mvp_id = next(i for i in self.children if i.custom_id == "mvp_select").values[0]
 
         if win_side == "VOID":
-            await interaction.response.send_message(f"🚫 比賽 `{self.code}` 已作廢。")
+            await interaction.response.send_message(f" 比賽 `{self.code}` 已作廢。")
             return await interaction.message.delete()
 
         p_db = load_db(PLAYERS_DB)
@@ -191,6 +191,15 @@ class SettlementView(discord.ui.View):
         await interaction.response.send_message(f"✅ 已成功結算比賽 `{self.code}`")
         await interaction.message.delete()
 
+
+        match_channel = interaction.channel
+        if interaction.channel.name.startswith("game-"):
+          await asyncio.sleep(5)  
+
+        try:
+           await match_channel.delete(reason="Match settled and finished")
+        except Exception as e:
+           print("刪除頻道失敗:", e)
 
 class PickingView(discord.ui.View):
     def __init__(self, cap_a, cap_b, pool, code, txt_chan):
@@ -225,12 +234,12 @@ class PickingView(discord.ui.View):
             await self.start_match(interaction)
         else:
             self.refresh_select()
-            await interaction.response.edit_message(content=f"🔵 Team A: {len(self.team_a)}/4 | 🔴 Team B: {len(self.team_b)}/4\n等待 {self.turn.mention} 選人...", view=self)
+            await interaction.response.edit_message(content=f" Team A: {len(self.team_a)}/4 |  Team B: {len(self.team_b)}/4\n等待 {self.turn.mention} 選人...", view=self)
 
     async def start_match(self, interaction):
         cat = bot.get_channel(CATEGORY_ID)
-        vc_a = await interaction.guild.create_voice_channel(f"🔵 Team A | {self.code}", category=cat)
-        vc_b = await interaction.guild.create_voice_channel(f"🔴 Team B | {self.code}", category=cat)
+        vc_a = await interaction.guild.create_voice_channel(f" Team A | {self.code}", category=cat)
+        vc_b = await interaction.guild.create_voice_channel(f" Team B | {self.code}", category=cat)
         for p in self.team_a: await p.move_to(vc_a)
         for p in self.team_b: await p.move_to(vc_b)
 
@@ -239,9 +248,9 @@ class PickingView(discord.ui.View):
         cmd_a = f"/p {' '.join([get_ign(p) for p in self.team_a])}"
         cmd_b = f"/p {' '.join([get_ign(p) for p in self.team_b])}"
 
-        embed = discord.Embed(title="⚔️ 隊伍分配完畢", description=SEASON_RULES, color=0x2ecc71)
-        embed.add_field(name="🔵 Team A 指令", value=f"```{cmd_a}```", inline=False)
-        embed.add_field(name="🔴 Team B 指令", value=f"```{cmd_b}```", inline=False)
+        embed = discord.Embed(title=" 隊伍分配完畢", description=SEASON_RULES, color=0x2ecc71)
+        embed.add_field(name=" Team A 指令", value=f"```{cmd_a}```", inline=False)
+        embed.add_field(name=" Team B 指令", value=f"```{cmd_b}```", inline=False)
         await self.txt_chan.send(content=" ".join([p.mention for p in self.team_a + self.team_b]), embed=embed)
         await interaction.message.delete()
 
@@ -280,7 +289,7 @@ async def on_voice_state_update(member, before, after):
         overwrites = {guild.default_role: discord.PermissionOverwrite(view_channel=False),
                       **{p: discord.PermissionOverwrite(view_channel=True) for p in players}}
         text_chan = await guild.create_text_channel(f"game-{match_code.lower()}", category=category, overwrites=overwrites)
-        await text_chan.send(f"🎮 **比賽開始! ID: {match_code}**\n🔵 隊長: {captains[0].mention}\n🔴 隊長: {captains[1].mention}",
+        await text_chan.send(f" **比賽開始! ID: {match_code}**\nTeam 1 隊長: {captains[0].mention}\nTeam 2 隊長: {captains[1].mention}",
                              view=PickingView(captains[0], captains[1], [p for p in players if p not in captains], match_code, text_chan))
 
 
@@ -289,7 +298,7 @@ async def profile(interaction: discord.Interaction, member: discord.Member = Non
     member = member or interaction.user
     db = load_db(PLAYERS_DB)
     data = db.get(str(member.id))
-    if not data: return await interaction.response.send_message("❌ 此玩家尚未註冊。")
+    if not data: return await interaction.response.send_message(" 此玩家尚未註冊。")
     embed = discord.Embed(title=f"📊 {data['ign']} 的戰績清單", color=0x3498db)
     embed.add_field(name="積分 (ELO)", value=f"`{data['elo']}`", inline=True)
     embed.add_field(name="勝/敗", value=f"`{data['wins']}W / {data['losses']}L`", inline=True)
@@ -325,7 +334,7 @@ async def register(interaction: discord.Interaction, ign: str):
         role = interaction.guild.get_role(START_ROLE_ID)
         if role: await interaction.user.add_roles(role)
         await update_member_visuals(interaction.user, 0, ign)
-        await interaction.followup.send(f"✅ 註冊成功！歡迎 {ign}。")
+        await interaction.followup.send(f" 註冊成功！歡迎 {ign}。")
         msg = await interaction.original_response()
         await asyncio.sleep(3)
         await msg.delete()
